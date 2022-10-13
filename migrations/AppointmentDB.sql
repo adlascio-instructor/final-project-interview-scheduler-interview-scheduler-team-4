@@ -1,38 +1,38 @@
 CREATE SCHEMA [IF NOT EXISTS] schema_name;
 
-CREATE TABLE appointment (
+CREATE TABLE appointments (
     id serial primary key,
     time varchar(255),
     day_id integer REFERENCES day(id)
 );
 
-CREATE TABLE available_interviewer (
+CREATE TABLE available_interviewers (
     id serial primary key,
     interviewer_id integer REFERENCES interviewer (id),
     day_id integer REFERENCES day (id)
 );
 
-CREATE TABLE day (
+CREATE TABLE days (
     id serial primary key,
-    week_name varchar(255)
+    week_name varchar(15)
 );
 
-CREATE TABLE interview (
+CREATE TABLE interviews (
     id serial primary key,
-    student varchar(255),
-    nterviewer_id integer REFERENCES interviewer (id),
+    student varchar(100),
+    interviewer_id integer REFERENCES interviewer (id),
     appointment integer REFERENCES appointment (id)
 );
 
-CREATE TABLE interviewer (
+CREATE TABLE interviewers (
     id serial primary key,
-    name varchar(255),
+    name varchar(100),
     avatar text
 );
 
 
-SELECT * FROM appointment;
-SELECT * FROM day;
-SELECT * FROM interview;
-SELECT * FROM interviewer;
-SELECT * FROM available_interviewer;
+SELECT * FROM appointments;
+SELECT * FROM days;
+SELECT * FROM interviews;
+SELECT * FROM interviewers;
+SELECT * FROM available_interviewers;
