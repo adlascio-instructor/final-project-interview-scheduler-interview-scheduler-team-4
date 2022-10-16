@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import "./App.scss";
 
@@ -8,9 +8,38 @@ import daysData from "./components/__mocks__/days.json";
 import appointmentsData from "./components/__mocks__/appointments.json";
 
 export default function Application() {
-  const [day, setDay] = useState("Monday");
+  const [day, setDay] = useState(daysData["Monday"]);
   const [days, setDays] = useState(daysData);
   const [appointments, setAppointments] = useState(appointmentsData);
+
+  const getDays = async() => {
+    try{
+    const res = await fetch("http://localhost:8000/days")
+    const data = await res.json()
+    setDays(data)
+  } catch(error){
+    console.log(error.message)
+  }
+  }
+
+  const getAppointments = async() => {
+    try{
+    const res = await fetch(`http://localhost:8000/appointments/${day.id}`)
+    const data = await res.json()
+    setAppointments(data)
+  } catch(error){
+    console.log(error.message)
+  }
+  }
+  
+  useEffect(() => {
+    getDays ()
+  }, [])
+
+  useEffect(() => {
+    getAppointments ()
+  }, [day])
+
   function bookInterview(id, interview) {
     console.log(id, interview);
     const isEdit = appointments[id].interview;
@@ -73,7 +102,7 @@ export default function Application() {
         />
         <hr className="sidebar__separator sidebar--centered" />
         <nav className="sidebar__menu">
-          <DayList days={days} value={day} onChange={setDay} />
+          <DayList days={days} value={day.name} onChange={setDay} />
         </nav>
       </section>
       <section className="schedule">

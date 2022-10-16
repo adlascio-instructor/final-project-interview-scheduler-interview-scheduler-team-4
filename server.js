@@ -1,11 +1,17 @@
 const express = require("express");
 const { Pool } = require("pg");
+require ("dotenv").config ()
+const interviewRoutes = require("./routes/interview")
+const interviewerRoutes = require("./routes/interviewer")
+const availableDaysRoutes = require("./routes/availableDay")
+const appointmentRoutes = require("./routes/appointment")
+const cors = require("cors")
 
 const server = express();
 
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
-
+server.use(cors())
 
 const dbCredentials = {
   user: process.env.DB_USER,
@@ -13,28 +19,12 @@ const dbCredentials = {
   database: process.env.DB_DATABASE,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
-};
+}; 
 
-server.get("/interviews", (req, res) => {
-  const pool = new Pool(dbCredentials);
-  pool
-    .query("SELECT * FROM interviews")
-    .then((result) => result.rows)
-    .then((interviews) => res.json(interviews))
-    .catch((err) => console.log(err))
-    .finally(() => pool.end());
-});
-
-server.get("/interviewers", (req, res) => {
-  const pool = new Pool(dbCredentials);
-  pool
-    .query("SELECT * FROM interviewers")
-    .then((result) => result.rows)
-    .then((interviewers) => res.json(interviewers))
-    .catch((err) => console.log(err))
-    .finally(() => pool.end());
-});
-
+server.use(interviewRoutes)
+server.use(interviewerRoutes)
+server.use(availableDaysRoutes)
+server.use(appointmentRoutes)
 
 server.get("/available_interviewers", (req, res) => {
   const pool = new Pool(dbCredentials);
