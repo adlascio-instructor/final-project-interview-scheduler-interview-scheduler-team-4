@@ -4,8 +4,9 @@ import "./App.scss";
 
 import DayList from "./components/DayList";
 import Appointment from "./components/Appointment";
-import daysData from "./components/__mocks__/days.json";
-import appointmentsData from "./components/__mocks__/appointments.json";
+ 
+/* import daysData from "./components/__mocks__/days.json";
+import appointmentsData from "./components/__mocks__/appointments.json"; */
 
 export default function Application() {
   const [day, setDay] = useState(daysData["Monday"]);
@@ -52,6 +53,9 @@ export default function Application() {
         ...prev,
         [id]: appointment,
       };
+
+/* socket for sending appointments needs communication */
+
       return appointments;
     });
     if (!isEdit) {
@@ -68,7 +72,19 @@ export default function Application() {
       });
     }
   }
+
+
   function cancelInterview(id) {
+    fetch("http://localhost:8000/deleteAppointments", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        appointment_id: id,
+      }),
+    });
+
     setAppointments((prev) => {
       const updatedAppointment = {
         ...prev[id],
@@ -78,8 +94,12 @@ export default function Application() {
         ...prev,
         [id]: updatedAppointment,
       };
+
+/* socket? */
+
       return appointments;
     });
+
     setDays((prev) => {
       const updatedDay = {
         ...prev[day],
@@ -92,6 +112,8 @@ export default function Application() {
       return days;
     });
   }
+
+
   return (
     <main className="layout">
       <section className="sidebar">
@@ -102,7 +124,7 @@ export default function Application() {
         />
         <hr className="sidebar__separator sidebar--centered" />
         <nav className="sidebar__menu">
-          <DayList days={days} value={day.name} onChange={setDay} />
+          <DayList days={days} value={day} onChange={setDay} />
         </nav>
       </section>
       <section className="schedule">
