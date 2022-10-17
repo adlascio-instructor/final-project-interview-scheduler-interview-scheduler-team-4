@@ -6,5 +6,5 @@ CREATE TABLE days (
 CREATE TABLE appointments (
     id SERIAL PRIMARY KEY NOT NULL,
     time VARCHAR(255) NOT NULL,
-    day_id INTEGER REFERENCES days(id) -- ON DELETE CASCADE --
+    day_id INTEGER REFERENCES days(id) ON DELETE CASCADE
 );

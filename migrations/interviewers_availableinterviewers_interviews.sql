@@ -6,14 +6,14 @@ CREATE TABLE interviewers (
 
 CREATE TABLE available_interviewers (
     id SERIAL PRIMARY KEY,
-    interviewer_id INTEGER REFERENCES interviewers(id), -- ON DELETE CASCADE --
-    day_id INTEGER REFERENCES days(id) -- ON DELETE CASCADE --
+    interviewer_id INTEGER REFERENCES interviewers(id) ON DELETE CASCADE,
+    day_id INTEGER REFERENCES days(id)
 );
 
 CREATE TABLE interviews (
     id SERIAL PRIMARY KEY NOT NULL,
     student VARCHAR(255) NOT NULL,
-    interviewer_id INTEGER REFERENCES interviewers(id), -- ON DELETE CASCADE --
-    appointment_id INTEGER UNIQUE REFERENCES appointments(id) -- ON DELETE CASCADE --
+    interviewer_id INTEGER REFERENCES interviewers(id) ON DELETE CASCADE,
+    appointment_id INTEGER UNIQUE REFERENCES appointments(id) ON DELETE CASCADE
 );
 
