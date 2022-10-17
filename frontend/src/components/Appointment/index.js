@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "./Header";
 import Show from "./Show";
 import Empty from "./Empty";
@@ -8,9 +8,23 @@ import Confirm from "./Confirm";
 import "./styles.scss";
 
 const Appointment = (props) => {
+  const [weekDay, setWeekDay] = React.useState("Monday");
   const [add, setAdd] = React.useState(false);
   const [edit, setEdit] = React.useState(false);
+  const [interviewers, setInterviewers] = React.useState()
   const [isDeleting, setIsDeleting] = React.useState(false);
+
+  useEffect(() =>{
+    setWeekDay(props.day)
+  }, [props.day])
+
+  useEffect(() =>{
+    fetch(`http://localhost:8000/interviewers/${weekDay}`)
+    .then((response) => response.json())
+    .then((data) => {
+      setInterviewers(data);
+    });
+  }, [weekDay]);
   
   
   

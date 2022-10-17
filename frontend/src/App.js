@@ -9,9 +9,9 @@ import Appointment from "./components/Appointment";
 import appointmentsData from "./components/__mocks__/appointments.json"; */
 
 export default function Application() {
-  const [day, setDay] = useState(daysData["Monday"]);
-  const [days, setDays] = useState(daysData);
-  const [appointments, setAppointments] = useState(appointmentsData);
+  const [day, setDay] = useState("Monday");
+  const [days, setDays] = useState("");
+  const [appointments, setAppointments] = useState({});
 
   const getDays = async() => {
     try{
@@ -44,7 +44,8 @@ export default function Application() {
   function bookInterview(id, interview) {
     console.log(id, interview);
     const isEdit = appointments[id].interview;
-    setAppointments((prev) => {
+
+  setAppointments((prev) => {
       const appointment = {
         ...prev[id],
         interview: { ...interview },
@@ -127,6 +128,7 @@ export default function Application() {
           <DayList days={days} value={day} onChange={setDay} />
         </nav>
       </section>
+      
       <section className="schedule">
         {Object.values(appointments).map((appointment) => (
           <Appointment
