@@ -13,6 +13,32 @@ export default function Application() {
   const [days, setDays] = useState("");
   const [appointments, setAppointments] = useState({});
 
+  useEffect(() => {
+    const daysObject = {};
+    fetch(`http://localhost:8000/remainingSpots`)
+    .then((result) => result.json())
+    .then((data) => {
+      let count = {
+        Monday: 0,
+        Tuesday: 0,
+        Wednesday: 0,
+        Thursday: 0,
+        Friday: 0,
+      };
+      data.forEach((day) => {
+        count[day.day_name] += 1;
+        daysObject[day.day_name] = {
+          id:day.day_id,
+          name: day.day_name,
+          spots: 5 - count[day.day_name]
+        };
+        
+      });
+      setDays(daysObject);
+    });
+  }, []);
+
+  /*
   const getDays = async() => {
     try{
     const res = await fetch("http://localhost:8000/days")
@@ -23,6 +49,7 @@ export default function Application() {
   }
   }
 
+
   const getAppointments = async() => {
     try{
     const res = await fetch(`http://localhost:8000/appointments/${day.id}`)
@@ -30,9 +57,8 @@ export default function Application() {
     setAppointments(data)
   } catch(error){
     console.log(error.message)
-  }
-  }
-  
+  }}
+
   useEffect(() => {
     getDays ()
   }, [])
@@ -40,7 +66,7 @@ export default function Application() {
   useEffect(() => {
     getAppointments ()
   }, [day])
-
+*/
   function bookInterview(id, interview) {
     console.log(id, interview);
     const isEdit = appointments[id].interview;
@@ -128,7 +154,7 @@ export default function Application() {
           <DayList days={days} value={day} onChange={setDay} />
         </nav>
       </section>
-      
+
       <section className="schedule">
         {Object.values(appointments).map((appointment) => (
           <Appointment
