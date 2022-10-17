@@ -19,13 +19,13 @@ const Appointment = (props) => {
     setEdit(false);
     props.bookInterview(interview);
   }
-  const interviewers = [
+  /* const interviewers = [
     { id: 1, name: "Sylvia Palmer", avatar: "https://i.imgur.com/LpaY82x.png" },
     { id: 2, name: "Tori Malcolm", avatar: "https://i.imgur.com/Nmx0Qxo.png" },
     { id: 3, name: "Mildred Nazir", avatar: "https://i.imgur.com/T2WwVfS.png" },
     { id: 4, name: "Cohana Roy", avatar: "https://i.imgur.com/FK8V841.jpg" },
     { id: 5, name: "Sven Jones", avatar: "https://i.imgur.com/twYrpay.jpg" },
-  ];
+  ]; */
   return (
     <article className="appointment">
       <Header time={props.time} />
@@ -35,7 +35,7 @@ const Appointment = (props) => {
             message={"Are you sure you want to delete?"}
             onCancel={() => setIsDeleting(false)}
             onConfirm={() => {
-              props.cancelInterview(props.id);
+              props.cancelInterview(props.id, props.interview.id);
               setIsDeleting(false);
             }}
           />
@@ -43,22 +43,23 @@ const Appointment = (props) => {
           <Form
             student={props.interview.student}
             interviewer={props.interview.interviewer}
-            interviewers={interviewers}
-            onSave={save}
+            interviewers={props.interviewers}
+            onEdit={props.editInterview}
             onCancel={() => setEdit(false)}
+            interview={props.interview}
           />
         ) : (
           <Show
             student={props.interview.student}
             interviewer={props.interview.interviewer}
-            interviewers={interviewers}
+            interviewers={props.interviewers}
             onEdit={() => setEdit(true)}
             onDelete={() => setIsDeleting(true)}
           />
         )
       ) : add ? (
         <Form
-          interviewers={interviewers}
+          interviewers={props.interviewers}
           onSave={save}
           onCancel={() => setAdd(false)}
         />

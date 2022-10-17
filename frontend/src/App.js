@@ -9,14 +9,25 @@ import appointmentsData from "./components/__mocks__/appointments.json";
 
 export default function Application() {
   const [day, setDay] = useState(daysData["Monday"]);
-  const [days, setDays] = useState(daysData);
-  const [appointments, setAppointments] = useState(appointmentsData);
+  const [days, setDays] = useState([]);
+  const [appointments, setAppointments] = useState([]);
+  const [interviewers, setInterviewers] = useState([]);
 
   const getDays = async() => {
     try{
     const res = await fetch("http://localhost:8000/days")
     const data = await res.json()
     setDays(data)
+  } catch(error){
+    console.log(error.message)
+  }
+  }
+
+  const getInterviewers = async() => {
+    try{
+    const res = await fetch("http://localhost:8000/interviewers")
+    const data = await res.json()
+    setInterviewers(data)
   } catch(error){
     console.log(error.message)
   }
@@ -34,16 +45,30 @@ export default function Application() {
   
   useEffect(() => {
     getDays ()
+    getInterviewers ()
   }, [])
 
   useEffect(() => {
     getAppointments ()
   }, [day])
 
-  function bookInterview(id, interview) {
+  async function bookInterview(id, interview) {
+    const res = await fetch(`http://localhost:8000/interviews`, {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json"
+      },
+      body: JSON.stringify({
+        student: interview.student, 
+        interviewer_id: interview.interviewer.id,
+        appointment_id: id
+      })
+    })
+    console.log(res)
     console.log(id, interview);
+    getAppointments ()
     const isEdit = appointments[id].interview;
-    setAppointments((prev) => {
+/*     setAppointments((prev) => {
       const appointment = {
         ...prev[id],
         interview: { ...interview },
@@ -66,21 +91,43 @@ export default function Application() {
         };
         return days;
       });
-    }
+    } */
   }
-  function cancelInterview(id) {
+
+  async function editInterview(id, student, interviewer_id) {
+    console.log(id, student, interviewer_id)
+    const res = await fetch(`http://localhost:8000/interviews/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-type": "application/json"
+      },
+      body: JSON.stringify({
+        student, 
+        interviewer_id,
+      })
+    })
+    console.log(res)
+    getAppointments ()
+  }
+
+  async function cancelInterview(id, interviewId) {
+    const res = await fetch(`http://localhost:8000/interviews/${interviewId}`, {
+      method: "DELETE"
+    })
+    console.log(res)
+
     setAppointments((prev) => {
-      const updatedAppointment = {
-        ...prev[id],
-        interview: null,
-      };
-      const appointments = {
-        ...prev,
-        [id]: updatedAppointment,
-      };
-      return appointments;
+      const index = prev.findIndex((app) => app.id == id)
+      const updatedApp = {
+        ...prev[index],
+        interview:null
+      }
+      const updatedApps = [...prev]
+      updatedApps [index] = updatedApp 
+      console.log(updatedApps)
+      return updatedApps;
     });
-    setDays((prev) => {
+    /* setDays((prev) => {
       const updatedDay = {
         ...prev[day],
         spots: prev[day].spots + 1,
@@ -90,7 +137,7 @@ export default function Application() {
         [day]: updatedDay,
       };
       return days;
-    });
+    }); */
   }
   return (
     <main className="layout">
@@ -114,6 +161,8 @@ export default function Application() {
               bookInterview(appointment.id, interview)
             }
             cancelInterview={cancelInterview}
+            interviewers ={interviewers}
+            editInterview ={editInterview}
           />
         ))}
         <Appointment key="last" time="5pm" />

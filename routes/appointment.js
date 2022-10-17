@@ -12,9 +12,32 @@ const dbCredentials = {
     port: process.env.DB_PORT,
   }; 
 
-route.get("/appointments/:dayId", (req, res) => {
+route.get("/appointments/:dayId", async (req, res) => {
     const pool = new Pool(dbCredentials);
-    pool
+    const resultApps = await pool.query(`SELECT * FROM appointments WHERE day_id = ${req.params.dayId}`)
+    const resultInterviews = await pool.query(`SELECT * FROM interviews`)
+    const resultInterviewers = await pool.query(`SELECT * FROM interviewers`)
+    let interviewers = resultInterviewers.rows
+    let interviews = resultInterviews.rows
+    let appointments = resultApps.rows
+    pool.end ()
+    appointments = appointments.map((appointment) => {
+        interviews.forEach((interview) =>{
+            interviewers.forEach((interviewer) =>{
+                if (interview.interviewer_id == interviewer.id){
+                    interview.interviewer = interviewer
+                }
+            }) 
+            if (appointment.id == interview.appointment_id){
+                appointment.interview = interview
+            }
+        })
+        return appointment
+    })
+    res.json(appointments)
+
+
+   /*  pool
         .query(`SELECT appointments.id, time, interviews.student, interviewers.name, interviewers.avatar
             FROM appointments 
             INNER JOIN interviews 
@@ -42,7 +65,7 @@ route.get("/appointments/:dayId", (req, res) => {
                 }
             })
             res.json(appointments)
-            /* pool.query(`SELECT * FROM interviews`)
+            pool.query(`SELECT * FROM interviews`)
             .then((result) => {
                 console.log(result)
                 return (
@@ -61,12 +84,12 @@ route.get("/appointments/:dayId", (req, res) => {
                 })
                 res.json(appointments)
             })
-            .finally(() => pool.end()); */
+            .finally(() => pool.end()); 
         })
         .catch((err) => {
             console.log(err)
         })
-        .finally(() => pool.end());
+        .finally(() => pool.end()); */
 })
 
 module.exports = route;

@@ -14,7 +14,11 @@ const Form = (props) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     if (!name || !interviewer) return;
-    props.onSave(name, interviewer);
+    if (props.onEdit) {
+      props.onEdit(props.interview.id, name, interviewer.id)
+    } else {
+      props.onSave(name, interviewer);
+    }
   };
   const cancel = () => {
     reset();

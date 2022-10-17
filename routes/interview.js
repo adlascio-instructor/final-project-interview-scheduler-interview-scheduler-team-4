@@ -33,9 +33,32 @@ router.get("/interviews", (req,res)=>{
     .finally(() => pool.end());
 });
 
-// booking an interview
-router.post("/interviews", (req, res) => {
-    res.json("interviewBook")
+router.delete("/interviews/:id", async (req, res) => {
+    const pool = new Pool(dbCredentials);
+    await pool.query (`delete FROM interviews WHERE id = ${req.params.id}`)
+    pool.end()
+    res.json("interview deleted")
 })
+
+router.post("/interviews", async (req, res) => {
+  console.log(req.body)
+  const pool = new Pool(dbCredentials);
+  const result = await pool.query("SELECT * FROM interviews")
+  console.log(result.rowCount)
+  await pool.query (`INSERT INTO "interviews" ("id", "student", "interviewer_id", "appointment_id") 
+  VALUES ($1, $2, $3, $4);`, [result.rowCount+2, req.body.student, req.body.interviewer_id, req.body.appointment_id])
+  pool.end()
+  res.json("interview added")
+})
+
+router.put("/interviews/:id", async (req, res) => {
+  console.log(req.body)
+  const pool = new Pool(dbCredentials);
+  await pool.query (`update interviews set student = $1, interviewer_id = $2 WHERE id = $3`, [req.body.student, req.body.interviewer_id, req.params.id])
+  pool.end()
+  res.json("interview updated")
+})
+
+
 
 module.exports = router
