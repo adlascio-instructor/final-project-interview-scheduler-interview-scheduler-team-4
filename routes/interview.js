@@ -46,7 +46,7 @@ router.post("/interviews", async (req, res) => {
   const result = await pool.query("SELECT * FROM interviews")
   console.log(result.rowCount)
   await pool.query (`INSERT INTO "interviews" ("id", "student", "interviewer_id", "appointment_id") 
-  VALUES ($1, $2, $3, $4);`, [result.rowCount+2, req.body.student, req.body.interviewer_id, req.body.appointment_id])
+  VALUES ($1, $2, $3, $4);`, [result.rowCount+3, req.body.student, req.body.interviewer_id, req.body.appointment_id])
   pool.end()
   res.json("interview added")
 })
